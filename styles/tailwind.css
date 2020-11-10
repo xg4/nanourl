@@ -1,0 +1,75 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.loading {
+  transform-origin: center;
+  animation: rotate 2s linear infinite;
+}
+
+.loading circle {
+  fill: none;
+  stroke-width: 2;
+  stroke-dasharray: 1, 200;
+  stroke-dashoffset: 0;
+  stroke-linecap: round;
+  animation: dash 1.5s ease-in-out infinite;
+}
+
+@keyframes rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes dash {
+  0% {
+    stroke-dasharray: 1, 200;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 90, 200;
+    stroke-dashoffset: -35px;
+  }
+  100% {
+    stroke-dashoffset: -125px;
+  }
+}
+
+@keyframes backInDown {
+  0% {
+    transform: translateY(-100px);
+    opacity: 0.7;
+  }
+
+  80% {
+    transform: translateY(0px);
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+.backInDown {
+  animation: backInDown 0.5s both;
+}
+
+@keyframes backOutUp {
+  0% {
+    opacity: 1;
+  }
+
+  20% {
+    transform: translateY(0px);
+  }
+
+  100% {
+    transform: translateY(-100px);
+    opacity: 0.7;
+  }
+}
+
+.backOutUp {
+  animation: backOutUp 0.5s both;
+}
