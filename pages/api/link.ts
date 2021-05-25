@@ -3,8 +3,12 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import { generateShortCode, isURL, md5 } from '../../util'
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
-  const { url } = req.body
-  if (!url || !isURL(url)) {
+  const url = req.body.url as string
+  if (
+    !url ||
+    !isURL(url) ||
+    (req.headers.origin && url.startsWith(req.headers.origin))
+  ) {
     res.status(500).json(`Invalid url: ${url}`)
     return
   }
