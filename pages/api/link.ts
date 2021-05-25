@@ -1,5 +1,5 @@
+import { PrismaClient } from '@prisma/client'
 import { NextApiRequest, NextApiResponse } from 'next'
-import prisma from '../../lib/prisma'
 import { generateShortCode, isURL, md5 } from '../../util'
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
@@ -10,6 +10,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   try {
+    const prisma = new PrismaClient()
     const hash = md5(url)
     const existedUrl = await prisma.link.findUnique({
       where: { hash },

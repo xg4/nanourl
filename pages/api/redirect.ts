@@ -1,9 +1,10 @@
+import { PrismaClient } from '@prisma/client'
 import { NextApiRequest, NextApiResponse } from 'next'
-import prisma from '../../lib/prisma'
 import { decode62To10 } from '../../util'
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   try {
+    const prisma = new PrismaClient()
     const id = req.query.id as string
     const decodeId = decode62To10(id)
     const url = await prisma.link.findUnique({
