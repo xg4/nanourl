@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+body {
+  background-color: #e1e1e1;
+}
+
 .loading {
   transform-origin: center;
   animation: rotate 2s linear infinite;
@@ -52,7 +56,7 @@
 }
 
 .backInDown {
-  animation: backInDown 0.5s both;
+  animation: backInDown 0.3s both;
 }
 
 @keyframes backOutUp {
@@ -71,5 +75,5 @@
 }
 
 .backOutUp {
-  animation: backOutUp 0.5s both;
+  animation: backOutUp 0.3s both;
 }
