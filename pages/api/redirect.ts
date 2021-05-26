@@ -1,7 +1,7 @@
 import { Link, PrismaClient } from '@prisma/client'
 import { NextApiRequest, NextApiResponse } from 'next'
+import { decode } from '../../lib/base62'
 import { urlCache } from '../../lib/cache'
-import { decode62To10 } from '../../util'
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   try {
@@ -11,7 +11,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     let url: Link
     url = urlCache.get(id64)
     if (!url) {
-      const id = decode62To10(id64)
+      const id = decode(id64)
       url = await prisma.link.findUnique({
         where: {
           id,
