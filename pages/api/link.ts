@@ -1,8 +1,10 @@
 import { PrismaClient } from '@prisma/client'
-import { NextApiRequest, NextApiResponse } from 'next'
+import { NextApiHandler } from 'next'
 import { generateShortCode, isURL, md5 } from '../../util'
 
-export default async (req: NextApiRequest, res: NextApiResponse) => {
+const debug = require('debug')('api:link')
+
+const handler: NextApiHandler = async (req, res) => {
   const url = req.body.url as string
   if (
     !url ||
@@ -33,7 +35,9 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     })
     res.status(201).json(generateShortCode(newUrl.id))
   } catch (err) {
-    console.log(err)
+    debug(err)
     res.status(500).json('Internal Server Error')
   }
 }
+
+export default handler

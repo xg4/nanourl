@@ -1,9 +1,11 @@
 import { Link, PrismaClient } from '@prisma/client'
-import { NextApiRequest, NextApiResponse } from 'next'
+import { NextApiHandler } from 'next'
 import { decode } from '../../lib/base62'
 import { urlCache } from '../../lib/cache'
 
-export default async (req: NextApiRequest, res: NextApiResponse) => {
+const debug = require('debug')('api:redirect')
+
+const handler: NextApiHandler = async (req, res) => {
   try {
     const prisma = new PrismaClient()
     const id64 = req.query.id as string
@@ -33,8 +35,10 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       return
     }
   } catch (err) {
-    console.log(err)
+    debug(err)
   }
 
   res.redirect(301, '/')
 }
+
+export default handler
