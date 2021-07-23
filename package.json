@@ -17,6 +17,10 @@
   "license": "MIT",
   "author": "xg4 <xingor4@gmail.com>",
   "scripts": {
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:push": "prisma db push",
+    "db:deploy": "prisma migrate deploy",
     "dev": "next dev",
     "build": "next build",
     "start": "next start"
