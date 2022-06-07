@@ -4,8 +4,6 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import { prisma } from '../../lib/prisma'
 import { getShortCode, isURL } from '../../util/shared'
 
-const debug = require('debug')('api:link')
-
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<string>
@@ -39,7 +37,7 @@ export default async function handler(
     })
     res.json(getShortCode(newUrl.id))
   } catch (err) {
-    debug(err)
+    console.log(err)
     res.status(500).json('Internal Server Error')
   }
 }

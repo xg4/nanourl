@@ -5,8 +5,6 @@ import { urlCache } from '../../lib/cache'
 import { prisma } from '../../lib/prisma'
 import { getIdByShortCode } from '../../util/shared'
 
-const debug = require('debug')('api:redirect')
-
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -43,7 +41,7 @@ export default async function handler(
       return
     }
   } catch (err) {
-    debug(err)
+    console.log(err)
   }
 
   res.redirect(302, '/')
