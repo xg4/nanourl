@@ -9,7 +9,6 @@ const nextConfig = {
         'react-dom': 'preact/compat',
       })
     }
-
     return config
   },
   async rewrites() {
