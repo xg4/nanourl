@@ -30,7 +30,7 @@ export default function Home() {
   })
 
   return (
-    <div className="container mx-auto mt-40 mb-20 px-10 text-center">
+    <div className="container mx-auto flex min-h-screen flex-col items-center justify-center">
       <h2 className="mb-10 text-lg font-bold text-gray-700">Nano URL</h2>
       <Input.Search
         placeholder="Enter a URL to shorten..."
@@ -38,13 +38,13 @@ export default function Home() {
         enterButton="Shorten"
         size="large"
         onSearch={(val) => val && mutate(val)}
-        className="mb-10 max-w-lg"
+        className="mb-10 max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl"
         loading={isLoading}
       />
       <List
-        className="bg-white"
+        className="w-full max-w-xs bg-white sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl"
         bordered
-        header={'shortened URLs'}
+        header={<h3 className="mb-0 text-base font-medium">Shortened URLs</h3>}
         dataSource={list}
         renderItem={(item) => (
           <List.Item>

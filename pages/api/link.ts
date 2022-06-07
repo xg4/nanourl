@@ -34,7 +34,7 @@ export default async function handler(
     const newUrl = await prisma.link.create({
       data: {
         hash,
-        origin: url,
+        originalUrl: url,
       },
     })
     res.json(getShortCode(newUrl.id))

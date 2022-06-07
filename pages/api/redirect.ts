@@ -36,10 +36,10 @@ export default async function handler(
           id: url.id,
         },
         data: {
-          clickCount: url.clickCount + 1,
+          clicks: url.clicks + 1,
         },
       })
-      res.redirect(302, url.origin)
+      res.redirect(302, url.originalUrl)
       return
     }
   } catch (err) {

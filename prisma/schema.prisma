@@ -15,10 +15,10 @@ model Link {
   createdAt DateTime @default(now()) @map(name: "created_at")
   updatedAt DateTime @updatedAt @map(name: "updated_at")
 
-  origin     String    @unique
-  hash       String    @unique
-  urlExpires DateTime? @map(name: "url_expires")
-  clickCount Int       @default(0) @map(name: "click_count")
+  originalUrl String    @unique @map("original_url")
+  hash        String    @unique
+  expireDate  DateTime? @map(name: "expire_date")
+  clicks      Int       @default(0)
 
   @@map(name: "links")
 }
