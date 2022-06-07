@@ -33,6 +33,7 @@
     "axios": "^0.27.2",
     "base62": "2.0.1",
     "clsx": "^1.1.1",
+    "crypto-js": "4.1.1",
     "debug": "^4.3.4",
     "immer": "9.0.14",
     "lodash": "4.17.21",
@@ -44,6 +45,7 @@
     "react-query": "3.39.1"
   },
   "devDependencies": {
+    "@types/crypto-js": "4.1.1",
     "@types/lodash": "4.14.182",
     "@types/node": "^17.0.40",
     "@types/react": "^18.0.12",

@@ -1,28 +1,36 @@
-import { Link, PrismaClient } from '@prisma/client'
-import base62 from 'base62'
-import { NextApiHandler } from 'next'
+import { Link } from '@prisma/client'
+import { isString } from 'lodash'
+import { NextApiRequest, NextApiResponse } from 'next'
 import { urlCache } from '../../lib/cache'
+import { prisma } from '../../lib/prisma'
+import { getIdByShortCode } from '../../util/shared'
 
 const debug = require('debug')('api:redirect')
 
-const handler: NextApiHandler = async (req, res) => {
-  try {
-    const prisma = new PrismaClient()
-    const id64 = req.query.id as string
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  const base62Str = req.query.id
+  if (!isString(base62Str)) {
+    res.redirect(302, '/')
+    return
+  }
 
+  try {
     let url: Link | null | undefined
-    url = urlCache.get(id64)
+    url = urlCache.get(base62Str)
     if (!url) {
-      const id = base62.decode(id64)
+      const id = getIdByShortCode(base62Str)
       url = await prisma.link.findUnique({
         where: {
           id,
         },
       })
-      url && urlCache.set(id64, url)
     }
 
     if (url) {
+      urlCache.set(base62Str, url)
       await prisma.link.update({
         where: {
           id: url.id,
@@ -31,14 +39,12 @@ const handler: NextApiHandler = async (req, res) => {
           clickCount: url.clickCount + 1,
         },
       })
-      res.redirect(301, url.origin)
+      res.redirect(302, url.origin)
       return
     }
   } catch (err) {
     debug(err)
   }
 
-  res.redirect(301, '/')
+  res.redirect(302, '/')
 }
-
-export default handler

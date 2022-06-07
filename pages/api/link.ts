@@ -1,43 +1,45 @@
-import { PrismaClient } from '@prisma/client'
-import { NextApiHandler } from 'next'
-import { generateShortCode, isURL, md5 } from '../../util'
+import SHA256 from 'crypto-js/sha256'
+import { isString } from 'lodash'
+import { NextApiRequest, NextApiResponse } from 'next'
+import { prisma } from '../../lib/prisma'
+import { getShortCode, isURL } from '../../util/shared'
 
 const debug = require('debug')('api:link')
 
-const handler: NextApiHandler = async (req, res) => {
-  const url = req.body.url as string
-  if (
-    !url ||
-    !isURL(url) ||
-    (req.headers.origin && url.startsWith(req.headers.origin))
-  ) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse<string>
+) {
+  const { url } = req.body
+  if (!isString(url) || !isURL(url)) {
     res.status(400).json(`Invalid url: ${url}`)
     return
   }
 
+  if (req.headers.origin && url.startsWith(req.headers.origin)) {
+    res.status(400).json(`Can't link to your own domain: ${url}`)
+    return
+  }
+
   try {
-    const prisma = new PrismaClient()
-    const hash = md5(url)
+    const hash = SHA256(url).toString()
+
     const existedUrl = await prisma.link.findUnique({
       where: { hash },
     })
-
     if (existedUrl) {
-      res.status(200).json(generateShortCode(existedUrl.id))
+      res.json(getShortCode(existedUrl.id))
       return
     }
-
     const newUrl = await prisma.link.create({
       data: {
-        origin: url,
         hash,
+        origin: url,
       },
     })
-    res.status(201).json(generateShortCode(newUrl.id))
+    res.json(getShortCode(newUrl.id))
   } catch (err) {
     debug(err)
     res.status(500).json('Internal Server Error')
   }
 }
-
-export default handler
