@@ -11,7 +11,7 @@ const handler: NextApiHandler = async (req, res) => {
     !isURL(url) ||
     (req.headers.origin && url.startsWith(req.headers.origin))
   ) {
-    res.status(500).json(`Invalid url: ${url}`)
+    res.status(400).json(`Invalid url: ${url}`)
     return
   }
 

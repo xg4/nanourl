@@ -1,6 +1,6 @@
 import { Link, PrismaClient } from '@prisma/client'
+import base62 from 'base62'
 import { NextApiHandler } from 'next'
-import { decode } from '../../lib/base62'
 import { urlCache } from '../../lib/cache'
 
 const debug = require('debug')('api:redirect')
@@ -13,7 +13,7 @@ const handler: NextApiHandler = async (req, res) => {
     let url: Link | null | undefined
     url = urlCache.get(id64)
     if (!url) {
-      const id = decode(id64)
+      const id = base62.decode(id64)
       url = await prisma.link.findUnique({
         where: {
           id,
