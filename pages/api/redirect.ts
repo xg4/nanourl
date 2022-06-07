@@ -10,7 +10,7 @@ const handler: NextApiHandler = async (req, res) => {
     const prisma = new PrismaClient()
     const id64 = req.query.id as string
 
-    let url: Link
+    let url: Link | null | undefined
     url = urlCache.get(id64)
     if (!url) {
       const id = decode(id64)
@@ -19,7 +19,7 @@ const handler: NextApiHandler = async (req, res) => {
           id,
         },
       })
-      urlCache.set(id64, url)
+      url && urlCache.set(id64, url)
     }
 
     if (url) {

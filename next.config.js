@@ -1,7 +1,6 @@
-module.exports = {
-  future: {
-    webpack5: true,
-  },
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  reactStrictMode: true,
   webpack(config, { dev, isServer }) {
     if (!dev && !isServer) {
       Object.assign(config.resolve.alias, {
@@ -22,3 +21,5 @@ module.exports = {
     ]
   },
 }
+
+module.exports = nextConfig

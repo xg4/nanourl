@@ -1,3 +1,4 @@
+import { isString } from 'lodash'
 import { useState } from 'react'
 import { toast } from '../components/Toast'
 import { request } from '../util/request'
@@ -8,19 +9,20 @@ export default function Home() {
   const [redirect, setRedirect] = useState('')
 
   return (
-    <div className="container mx-auto mt-40 mb-20 text-center px-10">
-      <h2 className="text-lg font-bold mb-10 text-gray-700">Nano URL</h2>
+    <div className="container mx-auto mt-40 mb-20 px-10 text-center">
+      <h2 className="mb-10 text-lg font-bold text-gray-700">Nano URL</h2>
       {redirect ? (
-        <div className="w-full inline-flex items-center justify-center flex-col sm:flex-row">
+        <div className="inline-flex w-full flex-col items-center justify-center sm:flex-row">
           <a
-            className="text-blue-500 px-2 hover:underline mb-10 sm:mb-0"
+            rel="noreferrer"
+            className="mb-10 px-2 text-blue-500 hover:underline sm:mb-0"
             href={redirect}
             target="_blank"
           >
             {redirect}
           </a>
           <button
-            className="bg-indigo-600 hover:bg-indigo-500 focus:outline-none transition text-white px-8 py-3"
+            className="bg-indigo-600 px-8 py-3 text-white transition hover:bg-indigo-500 focus:outline-none"
             onClick={() => {
               setRedirect('')
             }}
@@ -30,7 +32,7 @@ export default function Home() {
         </div>
       ) : (
         <form
-          className="w-full inline-flex items-center justify-center"
+          className="inline-flex w-full items-center justify-center"
           onSubmit={async (evt) => {
             evt.preventDefault()
             if (!link) {
@@ -45,14 +47,16 @@ export default function Home() {
               setLink('')
               toast.success('成功')
             } catch (err) {
-              toast.fail(err)
+              if (isString(err)) {
+                toast.fail(err)
+              }
             }
           }}
         >
           <input
             type="text"
             placeholder="Enter a URL to shorten..."
-            className="max-w-sm flex-1 px-2 py-3 focus:outline-none focus:ring-1 focus:ring-indigo-300 focus:border-transparent"
+            className="max-w-sm flex-1 px-2 py-3 focus:border-transparent focus:outline-none focus:ring-1 focus:ring-indigo-300"
             value={link}
             onChange={(evt) => {
               setLink(evt.target.value)
@@ -60,7 +64,7 @@ export default function Home() {
           />
           <button
             type="submit"
-            className="bg-indigo-600 hover:bg-indigo-500 focus:outline-none transition text-white px-8 py-3"
+            className="bg-indigo-600 px-8 py-3 text-white transition hover:bg-indigo-500 focus:outline-none"
           >
             Shorten
           </button>
