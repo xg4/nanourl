@@ -1,4 +1,4 @@
-import { Input, List, Typography } from 'antd'
+import { Col, Input, List, Row, Typography } from 'antd'
 import produce from 'immer'
 import { uniqBy } from 'lodash'
 import { useState } from 'react'
@@ -48,16 +48,27 @@ export default function Home() {
         dataSource={list}
         renderItem={(item) => (
           <List.Item>
-            <Typography.Text keyboard>{item.originalUrl}</Typography.Text>
-            <span>-</span>
-            <Typography.Link
-              rel="noreferrer"
-              href={item.shortUrl}
-              target="_blank"
-              copyable
-            >
-              {item.shortUrl}
-            </Typography.Link>
+            <Row gutter={[10, 10]}>
+              <Col className="text-right" span={6}>
+                Original URL:
+              </Col>
+              <Col span={18}>
+                <Typography.Text keyboard>{item.originalUrl}</Typography.Text>
+              </Col>
+              <Col className="text-right" span={6}>
+                Nano URL:
+              </Col>
+              <Col span={18}>
+                <Typography.Link
+                  rel="noreferrer"
+                  href={item.shortUrl}
+                  target="_blank"
+                  copyable
+                >
+                  {item.shortUrl}
+                </Typography.Link>
+              </Col>
+            </Row>
           </List.Item>
         )}
       />
