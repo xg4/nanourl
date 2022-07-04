@@ -1,8 +1,6 @@
-import { Link } from '@prisma/client'
 import { isString } from 'lodash'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { getIdByShortCode } from '../../helpers/base62'
-import { urlCache } from '../../helpers/cache'
 import { prisma } from '../../helpers/prisma'
 
 export default async function handler(
@@ -16,19 +14,14 @@ export default async function handler(
   }
 
   try {
-    let url: Link | null | undefined
-    url = urlCache.get(base62Str)
-    if (!url) {
-      const id = getIdByShortCode(base62Str)
-      url = await prisma.link.findUnique({
-        where: {
-          id,
-        },
-      })
-    }
+    const id = getIdByShortCode(base62Str)
+    const url = await prisma.link.findUnique({
+      where: {
+        id,
+      },
+    })
 
     if (url) {
-      urlCache.set(base62Str, url)
       await prisma.link.update({
         where: {
           id: url.id,
