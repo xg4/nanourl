@@ -1,6 +1,7 @@
 import { notification } from 'antd'
 import axios from 'axios'
-import { get, isString } from 'lodash'
+import get from 'lodash/get'
+import isString from 'lodash/isString'
 
 export const request = axios.create({})
 

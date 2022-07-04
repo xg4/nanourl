@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client'
 import SHA256 from 'crypto-js/sha256'
-import { isString } from 'lodash'
+import isString from 'lodash/isString'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { getShortCode, isURL } from '../../helpers'
 

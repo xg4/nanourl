@@ -1,6 +1,6 @@
 import { Col, Input, List, Row, Typography } from 'antd'
 import produce from 'immer'
-import { uniqBy } from 'lodash'
+import uniqBy from 'lodash/uniqBy'
 import { useState } from 'react'
 import { useMutation } from 'react-query'
 import { shortUrl } from '../services'

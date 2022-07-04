@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client'
-import { isString } from 'lodash'
+import isString from 'lodash/isString'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { getIdByShortCode } from '../../helpers'
 
