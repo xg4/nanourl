@@ -1,8 +1,8 @@
 import SHA256 from 'crypto-js/sha256'
 import { isString } from 'lodash'
 import { NextApiRequest, NextApiResponse } from 'next'
-import { prisma } from '../../lib/prisma'
-import { getShortCode, isURL } from '../../util/shared'
+import { getShortCode, isURL } from '../../helpers/base62'
+import { prisma } from '../../helpers/prisma'
 
 export default async function handler(
   req: NextApiRequest,

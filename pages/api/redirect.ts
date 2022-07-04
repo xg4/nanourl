@@ -1,9 +1,9 @@
 import { Link } from '@prisma/client'
 import { isString } from 'lodash'
 import { NextApiRequest, NextApiResponse } from 'next'
-import { urlCache } from '../../lib/cache'
-import { prisma } from '../../lib/prisma'
-import { getIdByShortCode } from '../../util/shared'
+import { getIdByShortCode } from '../../helpers/base62'
+import { urlCache } from '../../helpers/cache'
+import { prisma } from '../../helpers/prisma'
 
 export default async function handler(
   req: NextApiRequest,
