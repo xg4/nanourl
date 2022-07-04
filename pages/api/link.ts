@@ -1,13 +1,15 @@
+import { PrismaClient } from '@prisma/client'
 import SHA256 from 'crypto-js/sha256'
 import { isString } from 'lodash'
 import { NextApiRequest, NextApiResponse } from 'next'
-import { getShortCode, isURL } from '../../helpers/base62'
-import { prisma } from '../../helpers/prisma'
+import { getShortCode, isURL } from '../../helpers'
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<string>
 ) {
+  const prisma = new PrismaClient()
+
   const { url } = req.body
   if (!isString(url) || !isURL(url)) {
     res.status(400).json(`Invalid url: ${url}`)
