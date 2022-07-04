@@ -3,12 +3,12 @@ import isString from 'lodash/isString'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { getIdByShortCode } from '../../helpers'
 
+const prisma = new PrismaClient()
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const prisma = new PrismaClient()
-
   const base62Str = req.query.id
   if (!isString(base62Str)) {
     res.redirect(302, '/')

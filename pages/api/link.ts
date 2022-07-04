@@ -4,12 +4,12 @@ import isString from 'lodash/isString'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { getShortCode, isURL } from '../../helpers'
 
+const prisma = new PrismaClient()
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<string>
 ) {
-  const prisma = new PrismaClient()
-
   const { url } = req.body
   if (!isString(url) || !isURL(url)) {
     res.status(400).json(`Invalid url: ${url}`)
