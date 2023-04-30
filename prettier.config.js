@@ -1,5 +1,4 @@
 module.exports = {
-  semi: false,
-  singleQuote: true,
+  ...require('@xg4/prettier-config'),
   plugins: [require('prettier-plugin-tailwindcss')],
 }

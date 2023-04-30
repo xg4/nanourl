@@ -1,8 +1,8 @@
+import { useMutation } from '@tanstack/react-query'
 import { Col, Input, List, Row, Typography } from 'antd'
 import produce from 'immer'
 import uniqBy from 'lodash/uniqBy'
 import { useState } from 'react'
-import { useMutation } from 'react-query'
 import { shortUrl } from '../services'
 
 interface GenerateUrl {
@@ -19,12 +19,12 @@ export default function Home() {
       const shortUrl = location.origin + '/' + result
       const originalUrl = val
       setList(
-        produce((draft) => {
+        produce(draft => {
           draft.push({
             originalUrl,
             shortUrl,
           })
-        })
+        }),
       )
     },
   })
@@ -38,18 +38,16 @@ export default function Home() {
           allowClear
           enterButton="Shorten"
           size="large"
-          onSearch={(val) => val && mutate(val)}
+          onSearch={val => val && mutate(val)}
           className="mb-10 max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl"
           loading={isLoading}
         />
         <List
           className="w-full max-w-xs bg-white sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl"
           bordered
-          header={
-            <h3 className="mb-0 text-base font-medium">Shortened URLs</h3>
-          }
+          header={<h3 className="mb-0 text-base font-medium">Shortened URLs</h3>}
           dataSource={list}
-          renderItem={(item) => (
+          renderItem={item => (
             <List.Item>
               <Row gutter={[10, 10]}>
                 <Col className="text-right" span={6}>
@@ -62,12 +60,7 @@ export default function Home() {
                   Nano URL:
                 </Col>
                 <Col span={18}>
-                  <Typography.Link
-                    rel="noreferrer"
-                    href={item.shortUrl}
-                    target="_blank"
-                    copyable
-                  >
+                  <Typography.Link rel="noreferrer" href={item.shortUrl} target="_blank" copyable>
                     {item.shortUrl}
                   </Typography.Link>
                 </Col>
