@@ -1,7 +1,8 @@
-import { request } from '../helpers'
+import { request } from '../utils'
 
-export function shortUrl(url: string): Promise<string> {
+export function createUrl({ url, shortCode }: { url: string; shortCode: string }): Promise<string> {
   return request.post('/api/link', {
     url,
+    shortCode,
   })
 }

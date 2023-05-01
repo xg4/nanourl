@@ -6,12 +6,11 @@ import isString from 'lodash/isString'
 export const request = axios.create({})
 
 request.interceptors.response.use(
-  (response) => {
+  response => {
     return response.data
   },
-  (error) => {
-    const message =
-      get(error, 'response.data') || get(error, 'response.statusText')
+  error => {
+    const message = get(error, 'response.data') || get(error, 'response.statusText')
     if (isString(message)) {
       notification.error({
         message,
@@ -19,5 +18,5 @@ request.interceptors.response.use(
       return Promise.reject(message)
     }
     return Promise.reject(error)
-  }
+  },
 )

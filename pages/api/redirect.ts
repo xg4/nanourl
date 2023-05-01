@@ -1,25 +1,19 @@
+import validateShortCode from '@/utils'
 import { PrismaClient } from '@prisma/client'
-import isString from 'lodash/isString'
 import { NextApiRequest, NextApiResponse } from 'next'
-import { getIdByShortCode } from '../../helpers'
 
-const prisma = new PrismaClient()
-
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
-  const base62Str = req.query.id
-  if (!isString(base62Str)) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  const shortCode = req.query.id
+  if (!validateShortCode(shortCode)) {
     res.redirect(302, '/')
     return
   }
 
+  const prisma = new PrismaClient()
   try {
-    const id = getIdByShortCode(base62Str)
     const url = await prisma.link.findUnique({
       where: {
-        id,
+        shortCode,
       },
     })
 
