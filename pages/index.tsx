@@ -51,6 +51,7 @@ export default function Home() {
             <Input placeholder="Enter a URL to shorten..." allowClear />
           </Form.Item>
           <Form.Item
+            extra={<div>Rule: 0-9A-Za-z, length 4-6</div>}
             label="Short Code"
             name="shortCode"
             rules={[{ required: true, message: 'Please input your shorten code!' }]}
