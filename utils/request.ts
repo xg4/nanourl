@@ -3,7 +3,7 @@ import axios from 'axios'
 import get from 'lodash/get'
 import isString from 'lodash/isString'
 
-export const request = axios.create({})
+export const request = axios.create()
 
 request.interceptors.response.use(
   response => {

@@ -1,8 +1,9 @@
+import { generateShortCode } from '@/utils'
 import { useMutation } from '@tanstack/react-query'
 import { Button, Col, Form, Input, List, Row, Typography } from 'antd'
 import { produce } from 'immer'
 import uniqBy from 'lodash/uniqBy'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { createUrl } from '../services'
 
 interface GenerateUrl {
@@ -42,6 +43,12 @@ export default function Home() {
     }
     mutate(values)
   }
+
+  const randomShortCode = useCallback(() => {
+    const shortCode = generateShortCode()
+    form.setFieldValue('shortCode', shortCode)
+  }, [form])
+
   return (
     <div className="bg-gray-200">
       <div className="container mx-auto flex min-h-screen flex-col items-center justify-center sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl">
@@ -56,7 +63,13 @@ export default function Home() {
             name="shortCode"
             rules={[{ required: true, message: 'Please input your shorten code!' }]}
           >
-            <Input addonBefore={prefixUrl} placeholder="Input shorten code" allowClear />
+            <Input.Search
+              enterButton={'random'}
+              onSearch={randomShortCode}
+              addonBefore={prefixUrl}
+              placeholder="Input shorten code"
+              allowClear
+            />
           </Form.Item>
 
           <Form.Item className="flex justify-center">
