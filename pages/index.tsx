@@ -1,8 +1,8 @@
-import { generateShortCode } from '@/utils'
+import { generateShortCode, toastError } from '@/utils'
 import { useMutation } from '@tanstack/react-query'
 import { Button, Col, Form, Input, List, Row, Typography } from 'antd'
 import { produce } from 'immer'
-import uniqBy from 'lodash/uniqBy'
+import { uniqBy } from 'lodash'
 import { useCallback, useEffect, useState } from 'react'
 import { createUrl } from '../services'
 
@@ -30,19 +30,13 @@ export default function Home() {
         }),
       )
     },
+    onError: toastError,
   })
 
   const [prefixUrl, setPrefixUrl] = useState('')
   useEffect(() => {
     window.location.origin && setPrefixUrl(window.location.origin + '/')
   }, [])
-
-  const onFinish = (values: { url: string; shortCode: string }) => {
-    if (isLoading) {
-      return
-    }
-    mutate(values)
-  }
 
   const randomShortCode = useCallback(() => {
     const shortCode = generateShortCode()
@@ -53,7 +47,7 @@ export default function Home() {
     <div className="bg-gray-200">
       <div className="container mx-auto flex min-h-screen flex-col items-center justify-center sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl">
         <h2 className="mb-10 text-lg font-bold text-gray-700">Nano URL</h2>
-        <Form form={form} className="mb-10 w-full rounded-xl bg-white p-10 shadow-lg" onFinish={onFinish}>
+        <Form form={form} className="mb-10 w-full rounded-xl bg-white p-10 shadow-lg" onFinish={mutate}>
           <Form.Item label="Original URL" name="url" rules={[{ required: true, message: 'Please input your URL!' }]}>
             <Input placeholder="Enter a URL to shorten..." allowClear />
           </Form.Item>
@@ -73,7 +67,7 @@ export default function Home() {
           </Form.Item>
 
           <Form.Item className="flex justify-center">
-            <Button type="primary" htmlType="submit">
+            <Button loading={isLoading} type="primary" htmlType="submit">
               Shorten
             </Button>
           </Form.Item>

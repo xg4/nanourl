@@ -2,13 +2,20 @@ import { Hydrate, QueryClient, QueryClientProvider } from '@tanstack/react-query
 import { Analytics } from '@vercel/analytics/react'
 import { ConfigProvider } from 'antd'
 import 'antd/dist/reset.css'
+import { noop } from 'lodash'
 import type { AppProps } from 'next/app'
 import Head from 'next/head'
 import { useState } from 'react'
 import '../styles/tailwind.css'
 
 export default function App({ Component, pageProps }: AppProps) {
-  const [queryClient] = useState(() => new QueryClient())
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: { queries: { retry: false, refetchOnWindowFocus: false } },
+        logger: { error: noop, log: noop, warn: noop },
+      }),
+  )
 
   return (
     <>
