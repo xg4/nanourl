@@ -1,3 +1,5 @@
+'use client'
+
 import { generateShortCode, toastError } from '@/utils'
 import { useMutation } from '@tanstack/react-query'
 import { Button, Col, Form, Input, List, Row, Typography } from 'antd'
@@ -32,30 +34,30 @@ export default function Home() {
     },
     onError: toastError,
   })
-
-  const [prefixUrl, setPrefixUrl] = useState('')
-  useEffect(() => {
-    window.location.origin && setPrefixUrl(window.location.origin + '/')
-  }, [])
-
   const randomShortCode = useCallback(() => {
     const shortCode = generateShortCode()
     form.setFieldValue('shortCode', shortCode)
   }, [form])
 
+  const [prefixUrl, setPrefixUrl] = useState('')
+  useEffect(() => {
+    window.location.origin && setPrefixUrl(window.location.origin + '/')
+    randomShortCode()
+  }, [randomShortCode])
+
   return (
     <div className="bg-gray-200">
-      <div className="container mx-auto flex min-h-screen flex-col items-center justify-center sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl">
+      <div className="container mx-auto flex min-h-screen flex-col items-center justify-center">
         <h2 className="mb-10 text-lg font-bold text-gray-700">Nano URL</h2>
         <Form form={form} className="mb-10 w-full rounded-xl bg-white p-10 shadow-lg" onFinish={mutate}>
-          <Form.Item label="Original URL" name="url" rules={[{ required: true, message: 'Please input your URL!' }]}>
+          <Form.Item label="Original URL" name="url" rules={[{ required: true, message: 'Input your URL, please' }]}>
             <Input placeholder="Enter a URL to shorten..." allowClear />
           </Form.Item>
           <Form.Item
             extra={<div>Rule: 0-9A-Za-z, length 4-6</div>}
-            label="Short Code"
+            label="Nano URL"
             name="shortCode"
-            rules={[{ required: true, message: 'Please input your shorten code!' }]}
+            rules={[{ required: true, message: 'Input your nano url, please' }]}
           >
             <Input.Search
               enterButton={'random'}

@@ -1,12 +1,19 @@
-import validateShortCode from '@/utils'
+import { isShortCode } from '@/utils/validate'
 import { PrismaClient } from '@prisma/client'
-import { NextApiRequest, NextApiResponse } from 'next'
+import { redirect } from 'next/navigation'
+import { NextResponse } from 'next/server'
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const shortCode = req.query.id
-  if (!validateShortCode(shortCode)) {
-    res.redirect(302, '/')
-    return
+export async function GET(
+  _: Request,
+  {
+    params,
+  }: {
+    params: { id: string }
+  },
+) {
+  const shortCode = params.id
+  if (!isShortCode(shortCode)) {
+    redirect('/')
   }
 
   const prisma = new PrismaClient()
@@ -16,7 +23,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         shortCode,
       },
     })
-
     if (url) {
       await prisma.link.update({
         where: {
@@ -26,12 +32,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           clicks: url.clicks + 1,
         },
       })
-      res.redirect(302, url.originalUrl)
-      return
+      return NextResponse.redirect(url.originalUrl, { status: 302 })
     }
   } catch (err) {
     console.log(err)
   }
 
-  res.redirect(302, '/')
+  redirect('/')
 }
