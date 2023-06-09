@@ -1,11 +1,12 @@
 'use client'
 
-import { generateShortCode, toastError } from '@/utils'
-import { useMutation } from '@tanstack/react-query'
-import { Button, Col, Form, Input, List, Row, Typography } from 'antd'
-import { produce } from 'immer'
+import { prefixShortCode } from '@/utils/prefixUrl'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { uniqBy } from 'lodash'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useLayoutEffect, useState } from 'react'
+import { SubmitHandler, useForm } from 'react-hook-form'
+import { toast } from 'react-hot-toast'
+import { z } from 'zod'
 import { createUrl } from '../services'
 
 interface GenerateUrl {
@@ -13,94 +14,114 @@ interface GenerateUrl {
   shortUrl: string
 }
 
+const formSchema = z.object({
+  url: z.string().url('Invalid url'),
+})
+
+type FormSchemaType = z.infer<typeof formSchema>
+
 export default function Home() {
-  const [form] = Form.useForm()
-  const [_list, setList] = useState<GenerateUrl[]>([])
-  const list = uniqBy(_list, 'originalUrl')
-
-  const { mutate, isLoading } = useMutation(createUrl, {
-    onSuccess(result, val) {
-      const shortUrl = location.origin + '/' + result
-      const originalUrl = val.url
-      form.resetFields()
-      setList(
-        produce(draft => {
-          draft.push({
-            originalUrl,
-            shortUrl,
-          })
-        }),
-      )
-    },
-    onError: toastError,
+  const [list, setList] = useState<GenerateUrl[]>([])
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<FormSchemaType>({
+    resolver: zodResolver(formSchema),
   })
-  const randomShortCode = useCallback(() => {
-    const shortCode = generateShortCode()
-    form.setFieldValue('shortCode', shortCode)
-  }, [form])
 
-  const [prefixUrl, setPrefixUrl] = useState('')
-  useEffect(() => {
-    window.location.origin && setPrefixUrl(window.location.origin + '/')
-    randomShortCode()
-  }, [randomShortCode])
+  const onSubmit: SubmitHandler<FormSchemaType> = useCallback(
+    async data => {
+      try {
+        const shortCode = await createUrl(data)
+        setList(prev =>
+          uniqBy(
+            [
+              ...prev,
+              {
+                originalUrl: data.url,
+                shortUrl: shortCode,
+              },
+            ],
+            'originalUrl',
+          ),
+        )
+      } catch (err) {
+        if (err instanceof Error) {
+          toast.error(err.message)
+        }
+      }
+      reset()
+    },
+    [reset],
+  )
+
+  const [location, setLocation] = useState<Location>()
+  useLayoutEffect(() => {
+    setLocation(window.location)
+  }, [])
 
   return (
-    <div className="bg-gray-200">
-      <div className="container mx-auto flex min-h-screen flex-col items-center justify-center">
-        <h2 className="mb-10 text-lg font-bold text-gray-700">Nano URL</h2>
-        <Form form={form} className="mb-10 w-full rounded-xl bg-white p-10 shadow-lg" onFinish={mutate}>
-          <Form.Item label="Original URL" name="url" rules={[{ required: true, message: 'Input your URL, please' }]}>
-            <Input placeholder="Enter a URL to shorten..." allowClear />
-          </Form.Item>
-          <Form.Item
-            extra={<div>Rule: 0-9A-Za-z, length 4-6</div>}
-            label="Nano URL"
-            name="shortCode"
-            rules={[{ required: true, message: 'Input your nano url, please' }]}
-          >
-            <Input.Search
-              enterButton={'random'}
-              onSearch={randomShortCode}
-              addonBefore={prefixUrl}
-              placeholder="Input shorten code"
-              allowClear
-            />
-          </Form.Item>
+    <div className="container prose prose-slate mx-auto space-y-10 px-4 pt-20 dark:prose-invert">
+      <h2 className="text-center">Nano URL</h2>
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="flex w-full min-w-max items-center space-x-2 rounded-md p-2 shadow-md"
+      >
+        <label className="hidden sm:inline-block" htmlFor="urlInput">
+          <b>{location?.host}</b>
+        </label>
 
-          <Form.Item className="flex justify-center">
-            <Button loading={isLoading} type="primary" htmlType="submit">
-              Shorten
-            </Button>
-          </Form.Item>
-        </Form>
-        <List
-          className="w-full bg-white"
-          bordered
-          header={<h3 className="mb-0 text-base font-medium">Shortened URLs</h3>}
-          dataSource={list}
-          renderItem={item => (
-            <List.Item>
-              <Row gutter={[10, 10]}>
-                <Col className="text-right" span={6}>
-                  Original URL:
-                </Col>
-                <Col span={18}>
-                  <Typography.Text keyboard>{item.originalUrl}</Typography.Text>
-                </Col>
-                <Col className="text-right" span={6}>
-                  Nano URL:
-                </Col>
-                <Col span={18}>
-                  <Typography.Link rel="noreferrer" href={item.shortUrl} target="_blank" copyable>
-                    {item.shortUrl}
-                  </Typography.Link>
-                </Col>
-              </Row>
-            </List.Item>
-          )}
+        <input
+          {...register('url')}
+          className="h-9 flex-1 bg-transparent px-2.5 text-base leading-none text-violet11 outline-none dark:text-slate-400"
+          id="urlInput"
+          type="text"
+          placeholder="Enter a URL to shorten..."
         />
-      </div>
+        {errors.url && <span className="text-xs text-red-400">{errors.url.message}</span>}
+        <button
+          disabled={isSubmitting}
+          type="submit"
+          className="inline-flex h-6 items-center justify-center rounded bg-violet9 px-2.5 text-sm leading-none text-white outline-none hover:bg-violet10 focus:relative focus:shadow-[0_0_0_2px] focus:shadow-violet7"
+        >
+          Shorten
+        </button>
+      </form>
+
+      {list.length ? <Table dataSource={list} /> : null}
     </div>
+  )
+}
+
+function Table({ dataSource }: { dataSource: GenerateUrl[] }) {
+  return (
+    <table className="table-auto break-all">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Original URL</th>
+          <th>Nano URL</th>
+        </tr>
+      </thead>
+      <tbody>
+        {dataSource.map((item, index) => (
+          <tr key={item.originalUrl}>
+            <td>{index + 1}</td>
+            <td>
+              <a rel="noreferrer" href={item.originalUrl} target="_blank">
+                {item.originalUrl}
+              </a>
+            </td>
+            <td>
+              <a rel="noreferrer" href={item.shortUrl} target="_blank">
+                {prefixShortCode(item.shortUrl)}
+              </a>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
   )
 }

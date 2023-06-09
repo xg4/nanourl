@@ -1,7 +1,6 @@
 import { Analytics } from '@vercel/analytics/react'
-import 'antd/dist/reset.css'
+import { Toaster } from 'react-hot-toast'
 import '../styles/globals.css'
-import Providers from './providers'
 
 export const metadata = {
   title: 'URL Shortener - Short URLs & Custom Free Link Shortener | Nano URL',
@@ -11,10 +10,11 @@ export const metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <Providers>
-        <body>{children}</body>
-      </Providers>
-      <Analytics />
+      <body className="dark:bg-slate-700">
+        {children}
+        <Analytics />
+        <Toaster />
+      </body>
     </html>
   )
 }
