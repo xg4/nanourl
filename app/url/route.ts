@@ -1,13 +1,15 @@
 import { createShortCodeByLink, getUrlByHash } from '@/server/services'
 import prisma from '@/server/utils/prisma'
 import md5 from '@/utils/md5'
-import { SHORT_CODE_PATTERN } from '@/utils/validate'
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
 
 const createUrlSchema = z.object({
   url: z.string().url('Invalid url'),
-  shortCode: z.string().regex(SHORT_CODE_PATTERN, 'Invalid short code').optional(),
+  shortCode: z
+    .string()
+    .regex(/^[0-9A-Za-z_-]{3,}$/, 'Invalid short code')
+    .optional(),
 })
 
 export async function POST(request: Request) {
