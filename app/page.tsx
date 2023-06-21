@@ -1,12 +1,12 @@
 'use client'
 
+import { CreateUrlType, createUrlSchema } from '@/schema'
+import { toastError } from '@/utils/error'
 import { prefixShortCode } from '@/utils/prefixUrl'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { uniqBy } from 'lodash'
 import { useCallback, useLayoutEffect, useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
-import { toast } from 'react-hot-toast'
-import { z } from 'zod'
 import { createUrl } from '../services'
 
 interface GenerateUrl {
@@ -14,47 +14,35 @@ interface GenerateUrl {
   shortUrl: string
 }
 
-const formSchema = z.object({
-  url: z.string().url('Invalid url'),
-})
-
-type FormSchemaType = z.infer<typeof formSchema>
-
 export default function Home() {
   const [list, setList] = useState<GenerateUrl[]>([])
+
+  const append = useCallback((data: GenerateUrl) => {
+    setList(prev => uniqBy([...prev, data], 'originalUrl'))
+  }, [])
+
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<FormSchemaType>({
-    resolver: zodResolver(formSchema),
+  } = useForm<CreateUrlType>({
+    resolver: zodResolver(createUrlSchema),
   })
 
-  const onSubmit: SubmitHandler<FormSchemaType> = useCallback(
-    async data => {
-      try {
-        const shortCode = await createUrl(data)
-        setList(prev =>
-          uniqBy(
-            [
-              ...prev,
-              {
-                originalUrl: data.url,
-                shortUrl: shortCode,
-              },
-            ],
-            'originalUrl',
-          ),
+  const onSubmit: SubmitHandler<CreateUrlType> = useCallback(
+    data => {
+      createUrl(data)
+        .then(shortUrl =>
+          append({
+            originalUrl: data.url,
+            shortUrl,
+          }),
         )
-      } catch (err) {
-        if (err instanceof Error) {
-          toast.error(err.message)
-        }
-      }
-      reset()
+        .catch(toastError)
+        .finally(reset)
     },
-    [reset],
+    [append, reset],
   )
 
   const [location, setLocation] = useState<Location>()

@@ -1,6 +1,12 @@
+import { isExpiredUrl, shortCodeSchema } from '@/schema'
 import prisma from '@/server/utils/prisma'
 import { redirect } from 'next/navigation'
 import { NextResponse } from 'next/server'
+import { z } from 'zod'
+
+const paramsSchema = z.object({
+  id: shortCodeSchema,
+})
 
 export async function GET(
   _: Request,
@@ -10,15 +16,14 @@ export async function GET(
     params: { id: string }
   },
 ) {
-  const shortCode = params.id
-
   try {
+    const { id: shortCode } = paramsSchema.parse(params)
     const url = await prisma.link.findUnique({
       where: {
         shortCode,
       },
     })
-    if (url) {
+    if (url && !isExpiredUrl(url.expiresAt)) {
       await prisma.link.update({
         where: {
           id: url.id,
