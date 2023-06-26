@@ -1,5 +1,5 @@
-import { createUrlSchema } from '@/schema'
 import { createLink } from '@/server/services'
+import { createUrlSchema } from '@/types'
 import createHttpError from 'http-errors'
 import { NextResponse } from 'next/server'
 import { z } from 'zod'

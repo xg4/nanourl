@@ -1,6 +1,11 @@
 import dayjs from 'dayjs'
 import { z } from 'zod'
 
+export interface GenerateUrl {
+  originalUrl: string
+  shortUrl: string
+}
+
 export const shortCodeSchema = z.string().regex(/^[0-9A-Za-z_-]{3,}$/, 'Invalid short code')
 
 export const createUrlSchema = z.object({

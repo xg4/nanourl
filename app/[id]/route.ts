@@ -1,5 +1,5 @@
-import { isExpiredUrl, shortCodeSchema } from '@/schema'
 import prisma from '@/server/utils/prisma'
+import { isExpiredUrl, shortCodeSchema } from '@/types'
 import { redirect } from 'next/navigation'
 import { NextResponse } from 'next/server'
 import { z } from 'zod'

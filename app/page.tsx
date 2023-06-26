@@ -1,19 +1,13 @@
 'use client'
 
-import QRCode from '@/components/QRCode'
-import { CreateUrlType, createUrlSchema } from '@/schema'
+import Table from '@/components/Table'
+import { createUrl } from '@/services'
+import { CreateUrlType, GenerateUrl, createUrlSchema } from '@/types'
 import { toastError } from '@/utils/error'
-import { prefixShortCode } from '@/utils/prefixUrl'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { uniqBy } from 'lodash'
 import { useCallback, useLayoutEffect, useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
-import { createUrl } from '../services'
-
-interface GenerateUrl {
-  originalUrl: string
-  shortUrl: string
-}
 
 export default function Home() {
   const [list, setList] = useState<GenerateUrl[]>([])
@@ -81,40 +75,5 @@ export default function Home() {
 
       {list.length ? <Table dataSource={list} /> : null}
     </div>
-  )
-}
-
-function Table({ dataSource }: { dataSource: GenerateUrl[] }) {
-  return (
-    <table className="table-auto break-all">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Original URL</th>
-          <th>Nano URL</th>
-          <th className="hidden md:block">QR Code</th>
-        </tr>
-      </thead>
-      <tbody>
-        {dataSource.map((item, index) => (
-          <tr key={item.originalUrl}>
-            <td className="align-middle font-bold">{index + 1}</td>
-            <td className="align-middle">
-              <a rel="noreferrer" href={item.originalUrl} target="_blank">
-                {item.originalUrl}
-              </a>
-            </td>
-            <td className="align-middle">
-              <a rel="noreferrer" href={item.shortUrl} target="_blank">
-                {prefixShortCode(item.shortUrl)}
-              </a>
-            </td>
-            <td className="hidden md:block">
-              <QRCode className="m-0 h-20 w-20 object-contain" text={prefixShortCode(item.shortUrl)} />
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
   )
 }

@@ -1,4 +1,4 @@
-import { CreateUrlType } from '@/schema'
+import { CreateUrlType } from '@/types'
 import { encodeId } from '@/utils/id'
 import md5 from '@/utils/md5'
 import { Link } from '@prisma/client'

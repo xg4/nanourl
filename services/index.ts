@@ -1,4 +1,4 @@
-import { CreateUrlType } from '@/schema'
+import { CreateUrlType } from '@/types'
 import ky from 'ky'
 
 export const request = ky.create({
