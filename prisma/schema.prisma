@@ -13,12 +13,12 @@ generator client {
 model Link {
   id          Int       @id @default(autoincrement())
   shortCode   String?   @unique @map(name: "short_code")
-  originalUrl String    @unique @map(name: "original_url")
-  hash        String    @unique
+  originalUrl String    @map(name: "original_url")
   expiresAt   DateTime? @map(name: "expires_at")
   clicks      Int       @default(0)
   createdAt   DateTime  @default(now()) @map(name: "created_at")
   updatedAt   DateTime  @updatedAt @map(name: "updated_at")
 
+  @@index([originalUrl])
   @@map(name: "links")
 }

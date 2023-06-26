@@ -1,7 +1,7 @@
 import CryptoJS from 'crypto-js'
 
 export function encodeId(id: number, prefix = '') {
-  const id36 = prefix + id.toString(36).padStart(4, '0')
+  const id36 = prefix + id.toString(36).padStart(2, '0')
   return CryptoJS.enc.Utf8.parse(id36).toString(CryptoJS.enc.Base64url)
 }
 

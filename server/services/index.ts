@@ -1,20 +1,8 @@
 import { CreateUrlType } from '@/types'
 import { encodeId } from '@/utils/id'
-import md5 from '@/utils/md5'
 import { Link } from '@prisma/client'
 import createHttpError from 'http-errors'
 import prisma from '../utils/prisma'
-
-async function getLinkByHash(originalUrl: string, hash: string) {
-  if (originalUrl.length <= hash.length) {
-    return prisma.link.findUnique({
-      where: { originalUrl },
-    })
-  }
-  return prisma.link.findUnique({
-    where: { hash },
-  })
-}
 
 async function generateCode(link: Link, prefix = ''): Promise<Link> {
   const shortCode = encodeId(link.id, prefix)
@@ -35,32 +23,28 @@ async function generateCode(link: Link, prefix = ''): Promise<Link> {
   return generateCode(link, prefix + '0')
 }
 
-export async function createLink({ url: originalUrl, expiresAt, shortCode }: CreateUrlType) {
-  const hash = md5(originalUrl)
-  const _link = await getLinkByHash(originalUrl, hash)
-  if (_link) {
-    return _link
-  }
+function findLinkByCode(shortCode: string) {
+  return prisma.link.findUnique({
+    where: { shortCode },
+  })
+}
 
+export async function createLink({ url: originalUrl, expiresAt, shortCode }: CreateUrlType) {
   if (shortCode) {
-    const existing = await prisma.link.findUnique({
-      where: { shortCode },
-    })
-    if (existing) {
+    if (await findLinkByCode(shortCode)) {
       throw new createHttpError.BadRequest(`Short code already exists: ${shortCode}`)
     }
   }
 
   const link = await prisma.link.create({
     data: {
-      hash,
       originalUrl,
       expiresAt,
       shortCode,
     },
   })
 
-  if (shortCode) {
+  if (link.shortCode) {
     return link
   }
 
