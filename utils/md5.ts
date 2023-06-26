@@ -1,5 +1,5 @@
-import CryptoJS from 'crypto-js'
+import MD5 from 'crypto-js/md5'
 
 export default function md5(val: string) {
-  return CryptoJS.MD5(val).toString()
+  return MD5(val).toString()
 }
