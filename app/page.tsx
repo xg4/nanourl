@@ -2,8 +2,9 @@
 
 import Table from '@/components/Table'
 import { createUrl } from '@/services'
-import { CreateUrlType, GenerateUrl, createUrlSchema } from '@/types'
+import { CreateUrlType, GenerateUrl } from '@/types'
 import { toastError } from '@/utils/error'
+import { createUrlSchema } from '@/utils/validate'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { uniqBy } from 'lodash'
 import { useCallback, useLayoutEffect, useState } from 'react'
