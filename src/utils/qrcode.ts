@@ -6,7 +6,7 @@ export async function create(text: string, options?: QRCodeRenderersOptions): Pr
       .then(c =>
         c.toBlob(blob => {
           if (!blob) {
-            throw new Error("Can't create qr code")
+            throw new Error("Can't create QR Code")
           }
           resolve(blob)
         }),

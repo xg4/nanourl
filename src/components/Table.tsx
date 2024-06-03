@@ -1,8 +1,13 @@
-import { GenerateUrl } from '@/types'
-import { prefixShortCode } from '@/utils/path'
+'use client'
+
+import { Url } from '@prisma/client'
 import QRCode from './QRCode'
 
-export default function Table({ dataSource }: { dataSource: GenerateUrl[] }) {
+function compose(short: string) {
+  return [window.location.origin, short].join('/')
+}
+
+export default function Table({ dataSource }: { dataSource: Url[] }) {
   return (
     <table className="table-auto break-all">
       <thead>
@@ -15,20 +20,20 @@ export default function Table({ dataSource }: { dataSource: GenerateUrl[] }) {
       </thead>
       <tbody>
         {dataSource.map((item, index) => (
-          <tr key={item.originalUrl}>
+          <tr key={item.id}>
             <td className="align-middle font-bold">{index + 1}</td>
             <td className="align-middle">
-              <a rel="noreferrer" href={item.originalUrl} target="_blank">
-                {item.originalUrl}
+              <a rel="noreferrer" href={item.original} target="_blank">
+                {item.original}
               </a>
             </td>
             <td className="align-middle">
-              <a rel="noreferrer" href={item.shortUrl} target="_blank">
-                {prefixShortCode(item.shortUrl)}
+              <a rel="noreferrer" href={item.short} target="_blank">
+                {compose(item.short)}
               </a>
             </td>
             <td className="hidden md:block">
-              <QRCode className="m-0 h-20 w-20 object-contain" text={prefixShortCode(item.shortUrl)} />
+              <QRCode className="m-0 h-20 w-20 object-contain" text={compose(item.short)} />
             </td>
           </tr>
         ))}

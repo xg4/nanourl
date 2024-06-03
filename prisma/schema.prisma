@@ -1,24 +1,35 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-
 generator client {
   provider = "prisma-client-js"
 }
 
-model Link {
-  id          Int       @id @default(autoincrement())
-  shortCode   String?   @unique @map(name: "short_code")
-  originalUrl String    @map(name: "original_url")
-  expiresAt   DateTime? @map(name: "expires_at")
-  clicks      Int       @default(0)
-  createdAt   DateTime  @default(now()) @map(name: "created_at")
-  updatedAt   DateTime  @updatedAt @map(name: "updated_at")
+datasource db {
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL")
+  directUrl = env("POSTGRES_URL_NON_POOLING")
+}
 
-  @@index([originalUrl])
-  @@map(name: "links")
+model Url {
+  id        Int         @id @default(autoincrement())
+  original  String
+  short     String      @unique
+  AccessLog AccessLog[]
+
+  createdAt DateTime @default(now()) @map(name: "created_at")
+  updatedAt DateTime @updatedAt @map(name: "updated_at")
+
+  @@index([short, original])
+  @@map("urls")
+}
+
+model AccessLog {
+  id        Int     @id @default(autoincrement())
+  urlId     Int     @map(name: "url_id")
+  url       Url     @relation(fields: [urlId], references: [id])
+  userAgent String? @map(name: "user_agent")
+
+  createdAt DateTime @default(now()) @map(name: "created_at")
+  updatedAt DateTime @updatedAt @map(name: "updated_at")
+
+  @@index([urlId])
+  @@map("access_logs")
 }

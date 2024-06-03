@@ -1,3 +1,4 @@
+import createHttpError from 'http-errors'
 import { HTTPError } from 'ky'
 import { get } from 'lodash'
 import { toast } from 'react-hot-toast'
@@ -16,4 +17,16 @@ export async function toastError(err: unknown) {
     }
     toast.error(err.message)
   }
+}
+
+export function handleError(error: unknown) {
+  if (error instanceof ZodError) {
+    const [issue] = error.issues
+    return createHttpError.BadRequest(issue.message)
+  }
+  if (createHttpError.isHttpError(error)) {
+    return error
+  }
+  console.error('unknown error: ', error)
+  return createHttpError.InternalServerError()
 }

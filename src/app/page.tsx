@@ -1,20 +1,19 @@
 'use client'
 
 import Table from '@/components/Table'
-import { createUrl } from '@/services'
-import { CreateUrlType, GenerateUrl } from '@/types'
 import { toastError } from '@/utils/error'
-import { createUrlSchema } from '@/utils/validate'
+import { request } from '@/utils/request'
+import { CreateUrlInput, createUrlSchema } from '@/utils/schema'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { uniqBy } from 'lodash'
+import { Url } from '@prisma/client'
 import { useCallback, useLayoutEffect, useState } from 'react'
-import { SubmitHandler, useForm } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 
 export default function Home() {
-  const [list, setList] = useState<GenerateUrl[]>([])
+  const [list, setList] = useState<Url[]>([])
 
-  const append = useCallback((data: GenerateUrl) => {
-    setList(prev => uniqBy([...prev, data], 'originalUrl'))
+  const append = useCallback((data: Url) => {
+    setList(prev => [...prev, data])
   }, [])
 
   const {
@@ -22,22 +21,13 @@ export default function Home() {
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<CreateUrlType>({
+  } = useForm<CreateUrlInput>({
     resolver: zodResolver(createUrlSchema),
   })
 
-  const onSubmit: SubmitHandler<CreateUrlType> = useCallback(
-    data => {
-      createUrl(data)
-        .then(shortUrl =>
-          append({
-            originalUrl: data.url,
-            shortUrl,
-          }),
-        )
-        .catch(toastError)
-        .finally(reset)
-    },
+  const onSubmit = useCallback(
+    (data: CreateUrlInput) =>
+      request.post('/url', { json: data }).json<Url>().then(append).catch(toastError).finally(reset),
     [append, reset],
   )
 
@@ -58,13 +48,13 @@ export default function Home() {
         </label>
 
         <input
-          {...register('url')}
+          {...register('original')}
           className="h-9 flex-1 bg-transparent px-2.5 text-base leading-none text-violet11 outline-none dark:text-slate-400"
           id="urlInput"
           type="text"
           placeholder="Enter a URL to shorten..."
         />
-        {errors.url && <span className="text-xs text-red-400">{errors.url.message}</span>}
+        {errors.original && <span className="text-xs text-red-400">{errors.original.message}</span>}
         <button
           disabled={isSubmitting}
           type="submit"
