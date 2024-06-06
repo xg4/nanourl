@@ -1,13 +1,21 @@
 'use client'
 
+import { URL_STORAGE_KEY } from '@/constants'
 import { Url } from '@prisma/client'
+import { useLocalStorage } from 'usehooks-ts'
 import QRCode from './QRCode'
 
 function compose(short: string) {
   return [window.location.origin, short].join('/')
 }
 
-export default function Table({ dataSource }: { dataSource: Url[] }) {
+export default function Table() {
+  const [dataSource] = useLocalStorage<Url[]>(URL_STORAGE_KEY, [])
+
+  if (!dataSource.length) {
+    return null
+  }
+
   return (
     <table className="table-auto break-all">
       <thead>

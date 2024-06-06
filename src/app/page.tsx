@@ -1,20 +1,29 @@
 'use client'
 
-import Table from '@/components/Table'
+import { URL_STORAGE_KEY } from '@/constants'
 import { toastError } from '@/utils/error'
 import { request } from '@/utils/request'
 import { CreateUrlInput, createUrlSchema } from '@/utils/schema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Url } from '@prisma/client'
+import dynamic from 'next/dynamic'
 import { useCallback, useLayoutEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { useLocalStorage } from 'usehooks-ts'
+
+const Table = dynamic(() => import('@/components/Table'), {
+  ssr: false,
+})
 
 export default function Home() {
-  const [list, setList] = useState<Url[]>([])
+  const [_, setList] = useLocalStorage<Url[]>(URL_STORAGE_KEY, [])
 
-  const append = useCallback((data: Url) => {
-    setList(prev => [...prev, data])
-  }, [])
+  const append = useCallback(
+    (data: Url) => {
+      setList(prev => [...prev, data])
+    },
+    [setList],
+  )
 
   const {
     register,
@@ -64,7 +73,7 @@ export default function Home() {
         </button>
       </form>
 
-      {list.length ? <Table dataSource={list} /> : null}
+      <Table />
     </div>
   )
 }
